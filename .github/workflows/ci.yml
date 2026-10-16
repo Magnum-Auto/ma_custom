@@ -88,6 +88,7 @@ jobs:
       - name: Install
         working-directory: /home/runner/frappe-bench
         run: |
+          bench get-app erpnext
           bench get-app ma_custom $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin test_site
@@ -100,6 +101,8 @@ jobs:
         working-directory: /home/runner/frappe-bench
         run: |
           bench --site test_site set-config allow_tests true
+          bench --site test_site run-tests --lightmode --module erpnext.tests.bootstrap_test_data
+          bench --site test_site execute frappe.db.set_default --args "['company', '_Test Company']"
           bench --site test_site run-tests --app ma_custom
         env:
           TYPE: server
